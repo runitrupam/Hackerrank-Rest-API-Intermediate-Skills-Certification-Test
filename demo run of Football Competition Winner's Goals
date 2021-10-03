@@ -1,0 +1,55 @@
+import requests
+competition = 'UEFA Champions League'
+year = '2011'
+url = 'https://jsonmock.hackerrank.com/api/football_competitions'
+params = {
+        'name': competition,
+        'year': str(year)
+    }
+    
+r = requests.get(url, params).json()
+
+
+winner_team = r['data'][0]['winner']
+#print(winner_team)
+team_no = 1
+url = ("https://jsonmock.hackerrank.com/api/football_matches?competition={}&year={}&team{}={}&page={}".
+       format(competition,str(year),team_no,winner_team,1))
+response1 = requests.get(url).json()
+
+
+#REST API: Football Competition Winner's Goals
+
+def home_team(year,winner_team,team_no):
+    params1 = {'year': str(year),
+            'team'+str(team_no): winner_team,
+            'page': 1,
+            'competition': competition
+    }
+    URL = 'https://jsonmock.hackerrank.com/api/football_matches'
+    r = requests.get(url = URL, params = params1)
+    data = r.json()
+    #data
+
+    total_pages = data['total_pages']
+    per_page = data['per_page']
+    goal_sum = 0
+    if team_no == 1:
+        goals_choosen = 'team1goals'
+    else:
+        goals_choosen = 'team2goals'
+    for page in range(1,total_pages + 1 ):
+        url = ("https://jsonmock.hackerrank.com/api/football_matches?competition={}&year={}&team{}={}&page={}".format(competition,str(year),team_no,winner_team,page))
+        #("https://jsonmock.hackerrank.com/api/football_matches?year={}&team1={}&page={}".format(year,team,page))
+        response1 = requests.get(url).json()
+        
+        try:
+            for i in range(0,per_page):
+                team2=response1['data'][i][goals_choosen]
+                goal_sum+=int(team2)
+        except:
+                pass
+    return (goal_sum) 
+#print(home_team(year,winner_team,2))
+print(home_team(year,winner_team,1) + home_team(year,winner_team,2) )
+    
